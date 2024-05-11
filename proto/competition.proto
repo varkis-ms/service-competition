@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package competition;
+
+option go_package = "github.com/varkis-ms/service-competition/internal/pkg/pb;competition";
+
+// Competition is service for managing data about competitions.
+service Competition {
+  // Create competition and save info.
+  rpc CompetitionCreate (CompetitionCreateRequest) returns (CompetitionCreateResponse);
+  // Edit competition info.
+  rpc CompetitionEdit (CompetitionEditRequest) returns (google.protobuf.Empty) {};
+  // Response list of available competition.
+  rpc CompetitionList (CompetitionListRequest) returns (CompetitionListResponse);
+  // Response info about competition.
+  rpc GetCompetitionInfo (CompetitionInfoRequest) returns (CompetitionInfoResponse);
+  // Response leaderboards.
+  rpc LeaderBoard (LeaderBoardRequest) returns (LeaderBoardResponse);
+  // Get total info about user's activity
+  rpc UserActivityTotal (UserActivityTotalRequest) returns (UserActivityTotalResponse);
+  // Get full info about user's activity
+  rpc UserActivityFull (UserActivityFullRequest) returns (UserActivityFullResponse);
+  // Get next data of user's solution
+  rpc GetNextSolution (google.protobuf.Empty) returns (GetNextSolutionResponse);
+  // Save result of user's solution
+  rpc SaveSolutionResult (SaveSolutionResultRequest) returns (google.protobuf.Empty) {};
+}
+
+message CompetitionCreateRequest {
+  int64  userID = 1;             // User ID of user.
+  string title = 2;              // Title of competition.
+  string description = 3;        // Description of competition.
+  string datasetTitle = 4;       // Title of dataset.
+  string datasetDescription = 5; // Description of dataset.
+}
+
+message CompetitionCreateResponse {
+  int64 competitionID = 1; // Competition ID of competition.
+}
+
+message CompetitionEditRequest {
+  int64  userID = 1;                      // User ID of user.
+  int64 competitionID = 2;                // Competition ID of competition.
+  optional string title = 3;              // Title of competition.
+  optional string description = 4;        // Description of competition.
+  optional string datasetTitle = 5;       // Title of dataset.
+  optional string datasetDescription = 6; // Description of dataset.
+}
+
+// TODO: стоит добавить limit offset
+message CompetitionListRequest {
+  int64  userID = 1; // User ID of user.
+}
+
+message CompetitionListResponse {
+  repeated CompetitionInfo competitionList = 1; // Array of competition.
+}
+
+message CompetitionInfo {
+  int64 competitionID = 1; // Competition ID of competition.
+  string title = 2;        // Title of competition.
+  string datasetTitle = 3;  // Title of dataset.
+}
+
+message CompetitionInfoRequest {
+  int64 userID = 1;        // User ID of user.
+  int64 competitionID = 2; // Competition ID of competition.
+}
+
+message CompetitionInfoResponse {
+  int64  competitionID = 1;      // Competition ID of competition.
+  string title = 2;              // Title of competition.
+  string datasetTitle = 4;       // Title of dataset.
+  string description = 3;        // Description of competition.
+  string datasetDescription = 5; // Description of dataset.
+  int64  amountUsers = 6;        // Amount of users in current competition.
+  float  maximumScore = 7;       // Maximum value of user score
+}
+
+// TODO: стоит добавить limit offset
+message LeaderBoardRequest {
+  int64 competitionID = 1; // Competition ID of competition.
+}
+
+message LeaderBoardResponse {
+  repeated LeaderBoard leaderBoardList = 1; // Array of leaderBoard.
+  int64                 competitionID = 2;  // Competition ID of competition.
+}
+
+message LeaderBoard {
+  int64  userID = 1;  // User ID of user.
+  float  score = 2;   // Score of solution.
+  string addedAt = 3; // Datetime of added solution.
+}
+
+message UserActivityTotalRequest {
+  int64  userID = 1; // User ID of user.
+}
+
+message UserActivityTotalResponse {
+  string totalTime = 1;
+  int64  totalAttempts = 2;
+  int64  totalCompetitions = 3;
+  int64  totalOwnerCompetitions = 4;
+}
+
+message UserActivityFullRequest {
+  int64  userID = 1; // User ID of user.
+}
+
+message UserActivityFullResponse {
+  repeated CompetitionInfoFullOwner owner = 1;
+  repeated CompetitionInfoFull      member = 2;
+}
+
+message CompetitionInfoFull {
+  int64  competitionID = 1; // Competition ID of competition.
+  string title = 2;         // Title of competition.
+  string datasetTitle = 3;  // Title of dataset.
+  float  score = 4;         // Score of solution.
+  string addedAt = 5;       // Datetime of added solution.
+}
+
+message CompetitionInfoFullOwner {
+  int64  competitionID = 1; // Competition ID of competition.
+  string title = 2;         // Title of competition.
+  string datasetTitle = 3;  // Title of dataset.
+  int64  amountUsers = 4;   // Amount of users in current competition.
+  string addedAt = 5;       // Datetime of added solution.
+}
+
+message GetNextSolutionResponse {
+  int64 userID = 1;        // User ID of user.
+  int64 competitionID = 2; // Competition ID of competition.
+  int64 solutionID = 3;    // Solution ID of solution.
+}
+
+message SaveSolutionResultRequest {
+  int64  solutionID = 1; // Solution ID of solution.
+  float  score = 2;      // Score of solution.
+  string runTime = 3;    // Run time of solution.
+}

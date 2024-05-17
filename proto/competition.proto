@@ -26,6 +26,8 @@ service Competition {
   rpc GetNextSolution (google.protobuf.Empty) returns (GetNextSolutionResponse);
   // Save result of user's solution
   rpc SaveSolutionResult (SaveSolutionResultRequest) returns (google.protobuf.Empty) {};
+  // Save solution in db
+  rpc SaveSolution (SaveSolutionRequest) returns (google.protobuf.Empty) {};
 }
 
 message CompetitionCreateRequest {
@@ -141,4 +143,9 @@ message SaveSolutionResultRequest {
   int64  solutionID = 1; // Solution ID of solution.
   float  score = 2;      // Score of solution.
   string runTime = 3;    // Run time of solution.
+}
+
+message SaveSolutionRequest {
+  int64 userID = 1;        // User ID of user.
+  int64 competitionID = 2; // Competition ID of competition.
 }

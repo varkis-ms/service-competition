@@ -14,6 +14,7 @@ import (
 	"github.com/varkis-ms/service-competition/internal/rpc/get_competition_info"
 	"github.com/varkis-ms/service-competition/internal/rpc/get_leaderboard"
 	"github.com/varkis-ms/service-competition/internal/rpc/get_next_solution"
+	"github.com/varkis-ms/service-competition/internal/rpc/save_solution"
 	"github.com/varkis-ms/service-competition/internal/rpc/save_solution_result"
 	"github.com/varkis-ms/service-competition/internal/rpc/user_activity_full"
 	"github.com/varkis-ms/service-competition/internal/rpc/user_activity_total"
@@ -45,6 +46,7 @@ func New(
 	userActivityTotalHandler *user_activity_total.Handler,
 	saveSolutionResultHandler *save_solution_result.Handler,
 	getNextSolution *get_next_solution.Handler,
+	saveSolution *save_solution.Handler,
 ) *App {
 	loggingOpts := []grpclog.Option{
 		grpclog.WithLogOnEvents(
@@ -79,6 +81,7 @@ func New(
 		userActivityTotalHandler,
 		saveSolutionResultHandler,
 		getNextSolution,
+		saveSolution,
 	)
 
 	return &App{

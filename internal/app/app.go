@@ -17,6 +17,7 @@ import (
 	"github.com/varkis-ms/service-competition/internal/rpc/get_competition_info"
 	"github.com/varkis-ms/service-competition/internal/rpc/get_leaderboard"
 	"github.com/varkis-ms/service-competition/internal/rpc/get_next_solution"
+	"github.com/varkis-ms/service-competition/internal/rpc/save_solution"
 	"github.com/varkis-ms/service-competition/internal/rpc/save_solution_result"
 	"github.com/varkis-ms/service-competition/internal/rpc/user_activity_full"
 	"github.com/varkis-ms/service-competition/internal/rpc/user_activity_total"
@@ -61,6 +62,7 @@ func Run(configPath string) {
 	userActivityTotalHandler := user_activity_total.New(repositories, logger)
 	saveSolutionResultHandler := save_solution_result.New(repositories, logger)
 	getNextSolution := get_next_solution.New(repositories, logger)
+	saveSolution := save_solution.New(repositories, logger)
 
 	// gRPC server
 	app := grpcapp.New(
@@ -75,6 +77,7 @@ func Run(configPath string) {
 		userActivityTotalHandler,
 		saveSolutionResultHandler,
 		getNextSolution,
+		saveSolution,
 	)
 
 	go func() {

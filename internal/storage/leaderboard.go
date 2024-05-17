@@ -74,44 +74,6 @@ func (r *Storage) GetAmountUsersAndMaxScore(ctx context.Context, competitionID i
 	return maxScore, amountUsers, nil
 }
 
-//func (r *Storage) GetCurrentSolution(ctx context.Context) (int64, int64, int64, error) {
-//	sql, args, _ := r.Builder.
-//		Select("user_id", "competition_id", "id").
-//		From("leaderboard").
-//		OrderBy("queue_id").
-//		Suffix("LIMIT 1").
-//		ToSql()
-//
-//	var (
-//		userID        int64
-//		competitionID int64
-//		solutionID    int64
-//	)
-//	err := r.Pool.QueryRow(ctx, sql, args...).Scan(&userID, &competitionID, &solutionID)
-//	if err != nil {
-//		if !errors.Is(err, pgx.ErrNoRows) {
-//			return 0, 0, 0, err
-//		}
-//	}
-//
-//	return userID, competitionID, solutionID, nil
-//}
-
-func (r *Storage) SaveSolution(ctx context.Context, userID, competitionID int64) error {
-	sql, args, _ := r.Builder.
-		Insert("leaderboard").
-		Columns("user_id", "competition_id").
-		Values(userID, competitionID).
-		ToSql()
-
-	_, err := r.Pool.Exec(ctx, sql, args...)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (r *Storage) SaveScore(ctx context.Context, userID, competitionID, score int64) error {
 	// TODO: runtime
 	sql, args, _ := r.Builder.

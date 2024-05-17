@@ -20,7 +20,5 @@ type Repository interface {
 	GetCompetitionInfoFullOwner(ctx context.Context, userID int64) ([]model.CompetitionInfoFullOwner, error)
 	SaveSolutionInfo(ctx context.Context, solutionID int64, score float32, interval time.Duration) error
 	GetNextSolutionInfo(ctx context.Context) (int64, int64, int64, error)
-	//GetCurrentSolve(ctx context.Context) (string, string, int, error)
-	//SaveSolveDataToDb(ctx context.Context, userId, competitionID string) error
-	//SaveScoreToDb(ctx context.Context, queueId, score int) error
+	SaveSolution(ctx context.Context, userID, competitionID int64) error
 }

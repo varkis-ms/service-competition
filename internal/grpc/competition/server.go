@@ -12,6 +12,7 @@ import (
 	"github.com/varkis-ms/service-competition/internal/rpc/get_competition_info"
 	"github.com/varkis-ms/service-competition/internal/rpc/get_leaderboard"
 	"github.com/varkis-ms/service-competition/internal/rpc/get_next_solution"
+	"github.com/varkis-ms/service-competition/internal/rpc/save_solution"
 	"github.com/varkis-ms/service-competition/internal/rpc/save_solution_result"
 	"github.com/varkis-ms/service-competition/internal/rpc/user_activity_full"
 	"github.com/varkis-ms/service-competition/internal/rpc/user_activity_total"
@@ -33,6 +34,7 @@ type server struct {
 	userActivityTotalHandler  *user_activity_total.Handler
 	saveSolutionResultHandler *save_solution_result.Handler
 	getNextSolution           *get_next_solution.Handler
+	saveSolution              *save_solution.Handler
 }
 
 func Register(
@@ -46,6 +48,7 @@ func Register(
 	userActivityTotalHandler *user_activity_total.Handler,
 	saveSolutionResultHandler *save_solution_result.Handler,
 	getNextSolution *get_next_solution.Handler,
+	saveSolution *save_solution.Handler,
 ) {
 	competition.RegisterCompetitionServer(gRPCServer, &server{
 		competitionCreateHandler:  competitionCreateHandler,
@@ -57,6 +60,7 @@ func Register(
 		userActivityTotalHandler:  userActivityTotalHandler,
 		saveSolutionResultHandler: saveSolutionResultHandler,
 		getNextSolution:           getNextSolution,
+		saveSolution:              saveSolution,
 	})
 	reflection.Register(gRPCServer)
 }
@@ -263,4 +267,23 @@ func (s *server) GetNextSolution(
 	}
 
 	return out, nil
+}
+
+func (s *server) SaveSolution(
+	ctx context.Context,
+	in *competition.SaveSolutionRequest,
+) (*emptypb.Empty, error) {
+	if in.GetUserID() == 0 {
+		return nil, status.Error(codes.InvalidArgument, "user id is required")
+	}
+
+	if in.GetCompetitionID() == 0 {
+		return nil, status.Error(codes.InvalidArgument, "competition id is required")
+	}
+
+	if err := s.saveSolution.Handle(ctx, in); err != nil {
+		return nil, status.Error(codes.Internal, "failed to save solution")
+	}
+
+	return &emptypb.Empty{}, nil
 }

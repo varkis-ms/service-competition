@@ -70,3 +70,18 @@ func (r *Storage) GetNextSolutionInfo(ctx context.Context) (int64, int64, int64,
 
 	return userID, compID, solutionID, nil
 }
+
+func (r *Storage) SaveSolution(ctx context.Context, userID, competitionID int64) error {
+	sql, args, _ := r.Builder.
+		Insert("leaderboard").
+		Columns("user_id", "competition_id").
+		Values(userID, competitionID).
+		ToSql()
+
+	_, err := r.Pool.Exec(ctx, sql, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

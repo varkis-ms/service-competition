@@ -29,6 +29,7 @@ const (
 	Competition_UserActivityFull_FullMethodName   = "/competition.Competition/UserActivityFull"
 	Competition_GetNextSolution_FullMethodName    = "/competition.Competition/GetNextSolution"
 	Competition_SaveSolutionResult_FullMethodName = "/competition.Competition/SaveSolutionResult"
+	Competition_SaveSolution_FullMethodName       = "/competition.Competition/SaveSolution"
 )
 
 // CompetitionClient is the client API for Competition service.
@@ -49,8 +50,12 @@ type CompetitionClient interface {
 	UserActivityTotal(ctx context.Context, in *UserActivityTotalRequest, opts ...grpc.CallOption) (*UserActivityTotalResponse, error)
 	// Get full info about user's activity
 	UserActivityFull(ctx context.Context, in *UserActivityFullRequest, opts ...grpc.CallOption) (*UserActivityFullResponse, error)
+	// Get next data of user's solution
 	GetNextSolution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetNextSolutionResponse, error)
+	// Save result of user's solution
 	SaveSolutionResult(ctx context.Context, in *SaveSolutionResultRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Save solution in db
+	SaveSolution(ctx context.Context, in *SaveSolutionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type competitionClient struct {
@@ -142,6 +147,15 @@ func (c *competitionClient) SaveSolutionResult(ctx context.Context, in *SaveSolu
 	return out, nil
 }
 
+func (c *competitionClient) SaveSolution(ctx context.Context, in *SaveSolutionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Competition_SaveSolution_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CompetitionServer is the server API for Competition service.
 // All implementations must embed UnimplementedCompetitionServer
 // for forward compatibility
@@ -160,8 +174,12 @@ type CompetitionServer interface {
 	UserActivityTotal(context.Context, *UserActivityTotalRequest) (*UserActivityTotalResponse, error)
 	// Get full info about user's activity
 	UserActivityFull(context.Context, *UserActivityFullRequest) (*UserActivityFullResponse, error)
+	// Get next data of user's solution
 	GetNextSolution(context.Context, *emptypb.Empty) (*GetNextSolutionResponse, error)
+	// Save result of user's solution
 	SaveSolutionResult(context.Context, *SaveSolutionResultRequest) (*emptypb.Empty, error)
+	// Save solution in db
+	SaveSolution(context.Context, *SaveSolutionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedCompetitionServer()
 }
 
@@ -195,6 +213,9 @@ func (UnimplementedCompetitionServer) GetNextSolution(context.Context, *emptypb.
 }
 func (UnimplementedCompetitionServer) SaveSolutionResult(context.Context, *SaveSolutionResultRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveSolutionResult not implemented")
+}
+func (UnimplementedCompetitionServer) SaveSolution(context.Context, *SaveSolutionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveSolution not implemented")
 }
 func (UnimplementedCompetitionServer) mustEmbedUnimplementedCompetitionServer() {}
 
@@ -371,6 +392,24 @@ func _Competition_SaveSolutionResult_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Competition_SaveSolution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveSolutionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompetitionServer).SaveSolution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Competition_SaveSolution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompetitionServer).SaveSolution(ctx, req.(*SaveSolutionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Competition_ServiceDesc is the grpc.ServiceDesc for Competition service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -413,6 +452,10 @@ var Competition_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveSolutionResult",
 			Handler:    _Competition_SaveSolutionResult_Handler,
+		},
+		{
+			MethodName: "SaveSolution",
+			Handler:    _Competition_SaveSolution_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
